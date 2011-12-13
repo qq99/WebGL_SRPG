@@ -1,0 +1,16 @@
+Documentation:
+http://anthonycameron.com/cs488f2011project/
+
+Application:
+http://anthonycameron.com/cs488f2011project/app/
+
+Tested in:
+Chrome/Firefox latest, Win7 x64
+Firefox latest for Ubuntu x64 seems to show some graphical errors.  I do not know if these are driver issues or other.
+
+Overview:
+The inspiration for this style of game were others like Final Fantasy Tactics, Ogre Tactics, and Disgaea. Please see those games for the type of gameplay I anticipated this engine being useful for.
+
+However, I wanted to somehow bring something of my own to this genre. Many of these games would seem to suffer from needing to have maps completely designed by humans. I figured that it would be nice to allow the developer to perhaps offload some of this work to random noise, perhaps tweaking the random terrain. It was my hope that intriguing and believable landscapes could be created with very little or no modeling hours.
+
+I also wanted this engine to be playable on just about any computer without the need to install or update. To me, WebGL seemed perfect for this: as long as the user has a browser that supports the technology, and adoption of such browsers will only increase going into the future, then it should be very easy to extend this project to be a playable game.
