@@ -1,0 +1,313 @@
+- title = "CS488 F2011 A5 &ndash; WebGL Strategy RPG Engine"
+<!doctype html>
+%html(lang="en")
+  %head
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-language" content="en" />
+    %title #{title}
+    <link rel="stylesheet" type="text/css" href="css/reset.css"  media="all" />
+    <link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="css/web.css"  media="all" />
+    <link rel="stylesheet" type="text/css" href="ui-lightness/jquery-ui-1.8.14.custom.css">
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js'></script>
+    <script type='text/javascript' src='js/jquery-ui-1.8.14.custom.min.js'></script>
+    <script type="text/javascript" src="extern/jquery.EmbedPicasaGallery_7/slimbox2.js"></script>
+    <script type="text/javascript" src="extern/jquery.EmbedPicasaGallery_7/jquery.EmbedPicasaGallery.js"></script>
+    <script type='text/javascript' src='js/interactivity.js'></script>
+    <link href='http://fonts.googleapis.com/css?family=Ovo&v2' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:regular,bold&subset=Latin">
+    <link rel="stylesheet" href="extern/jquery.EmbedPicasaGallery_7/css/slimbox2.css" type="text/css" media="screen" />
+  %body
+    #document_options.notforprint
+      .container
+        .toggle.close
+        %h4 Contents
+        %ul.contents
+          %li
+            %a{:href=>"#introduction"} Introduction
+          %li
+            %a{:href=>"#vision"} Initial Vision
+          %li
+            %a{:href=>"#objectives"} Objectives
+          %li
+            %a{:href=>"#techoutline"} Technical Outline
+          %li
+            %a{:href=>"#caveats"} 
+              Bugs, Caveats, Cautions
+          %li
+            %a{:href=>"#codemap"} Code Map
+          %li
+            %a{:href=>"#references"} References
+        %h4 Document Options
+        %ul.options
+          %li
+            Page Width:
+            #width_slider.slider
+          %li
+            Font Size:
+            #font_slider.slider
+    %article      
+      .forprint
+        %p You're viewing a printed version of the website hosted at: http://anthonycameron.com/cs488f2011project/
+        %p 
+          I 
+          %strong strongly
+          encourage the web version!
+      %noscript
+        Please enable JavaScript for optimal viewing!  Many things may simply not work without it!  You can trust me ;)
+      %h1.title #{title}
+      %section#author
+        %p 
+          Code and documentation by 
+          %a{:href=>"http://anthonycameron.com/"} Anthony Cameron,
+          a5camero, 20231689 of University of Waterloo.  Published December 5, 2011.  Last edited December 5, 2011.
+        %p
+          %strong 
+            This is a 
+            %a{:href=>"http://www.google.com/chrome", :target=>"_blank"} Chrome
+            project.  Please be sure to download the latest version of 
+            %a{:href=>"http://www.google.com/chrome", :target=>"_blank"} Google Chrome.  
+            %br
+            This project was tested on Win7x64, and is not guaranteed to work in Firefox, though, it should.
+      %section#project
+        %a{:href=>"./app/", :style=>"text-align:center;"}
+          %img{:src=>"img/screenshot.png", :style=>"max-width:100%;"}
+          Launch!
+      %section#topics.more_technical
+        %h1 Topics/Keywords
+        %ul.keywords
+          %li Texture mapping
+          %li Texture atlas
+          %li Bump mapping
+          %li Procedural terrain
+          %li Water reflections
+          %li Camera on spline
+          %li Phong shading/lighting model
+          %li WebGL
+          %li OpenGL ES 2.0
+          %li Pathfinding
+          %li Perlin noise
+          %li Procedural content
+          %li.last Context-free trees
+      %section#navigation.notforprint
+        %h1 Contents
+        %ul.contents
+          %li
+            %a{:href=>"#introduction"} Introduction
+          %li
+            %a{:href=>"#vision"} Initial Vision
+          %li
+            %a{:href=>"#objectives"} Objectives
+          %li
+            %a{:href=>"#vision"} Initial Vision
+          %li
+            %a{:href=>"#gallery"} Gallery        
+          %li
+            %a{:href=>"#references"} References
+      %section#introduction
+        %h1 Introduction
+        %p For the final project of CS488 offered by the University of Waterloo, the students are instructed to set 10 computer graphics related objectives they need to achieve.  The instructor and TAs review this objective list and interact with the students to determine if it is sufficiently difficult enough to implement.  I'll discuss the objectives I chose here, those I accomplished, those I could not, and those I chose not to implement and why.
+        %p 
+          To the reader: I do aim for correctness, but unfortunately cannot guarantee it.  If you'd like to e-mail me at 
+          %a{:href=>"mailto:ar.cameron@gmail.com"} ar.cameron@gmail.com
+          I'd be glad to respond to any concerns regarding accuracy.
+      %section#vision
+        %h1 Initial Vision
+        %p 
+          You can view my proposal 
+          %a{:href=>"img/proposal2.pdf"} here.  
+          For purposes of this report, I'll focus on those objectives I did accomplish, as well as provide some discussion as to how those I did not implement might be attained.
+        %p 
+          The inspiration for this style of game were others like
+          %em Final Fantasy Tactics,
+          %em Ogre Tactics,
+          and
+          %em Disgaea.
+          Please see those games for the type of gameplay I anticipated this engine being useful for.
+        %p However, I wanted to somehow bring something of my own to this genre.  Many of these games would seem to suffer from needing to have maps completely designed by humans.  I figured that it would be nice to allow the developer to perhaps offload some of this work to random noise, perhaps tweaking the random terrain.  It was my hope that intriguing and believable landscapes could be created with very little or no modeling hours.
+        %p I also wanted this engine to be playable on just about any computer without the need to install or update.  To me, WebGL seemed perfect for this: as long as the user has a browser that supports the technology, and adoption of such browsers will only increase going into the future, then it should be very easy to extend this project to be a playable game.
+        %p I also wanted to explore real-time rendering techniques and interactive modes by making an entirely GPU shader driven project.  I had heard great things about what they could be used to accomplish and have definitely come to respect their 
+        %p Since the environment is WebGL, the focus then is (hopefully) doing things in a smart way to provide interactive framerates in this reduced environment.  There is a constant struggle, as many allowed OpenGL features are not available in the current WebGL context.  Of note, Texture Arrays, and even GL_QUADS were unavailable to me.
+        %p Finally, I initially started this in C++.  I quickly became frustrated with the lack of easy anonymous functions and re-compiling.  JavaScript, while perhaps hundreds of times slower, allowed me to develop this prototype as quickly as I did.
+      %section#objectives
+        %h1 Objectives
+        %ol.objectives
+          %li.achieved 
+            %a{:href=>"#obj1"} Bump mapping
+          %li.achieved 
+            %a{:href=>"#obj2"} Texturing
+          %li.notachieved Screen-space ambient occlusion
+          %li.notachieved Particle effects, animated
+          %li.achieved 
+            %a{:href=>"#obj5"} Procedural terrain modeling via combinations of noise and blending functions
+          %li.notachieved Procedural architecture via CFG
+          %li.achieved 
+            %a{:href=>"#obj7"} Camera animation on splines
+          %li.achieved
+            %a{:href=>"#obj8"} AI pathing
+          %li.achieved 
+            %a{:href=>"#obj9"} Reflections on water surfaces
+          %li.achieved 
+            %a{:href=>"#obj10"} Trees
+      %section#manual
+        %h1 User Manual
+        %h3 Running the application
+        %ol
+          %li
+            Simplest: visit 
+            %a{:href=>"../app/index.html"} this page
+            while running the latest Chrome or Firefox
+          %li
+            Via local files: it would be nice to download all the files and just double-click the index.html and have it run, no?
+            However, due to browser security policy CORS, this isn't possible without doing something else.
+            %ul
+              %li
+                Either start up a local proxy or local web server to host the   files, and work through that
+              %li
+                Or: Find out how to disable web security for your browser of choice.  In Chrome, this is "--disable-web-security" flag provided to the executable.
+            Without doing at least one of those things, you will be unable to see textures.
+        %h3 Using the application
+        %ul
+          %li
+            Q, E keys will rotate the camera about the various corners of the game.  You may want to wait for one rotation to finish before pressing it again!
+          %li
+            W, A, S, D keys will move the camera in space
+          %li
+            Mouse towards top/bottom of game area will change camera elevation
+          %li
+            Mouse towards left/right of game area will rotate camera
+          %li
+            Mouse wheel scroll will zoom in/out
+          %li
+            When the game is active, and the menu is up, you can select Move/Attack/etc.  However, only Move works.  Press Enter to being picking your move, then use the arrow keys to select a destination, and enter to finalize your move.
+      %section#techoutline
+        %h1 Technical Outline
+        %h2{:id=>"obj1"} Bump Mapping
+        %p Terrain bump mapping is accomplished by consulting 2 near neighbours for the corresponding fragment.  These differentials are then used, with a scaling factor, to perturb the surface normal in tangent-bitangent space.  This process occurs in the fragment program.
+        %p Water bump mapping is accomplished via Phong normal interpolation.  This process occurs in the vertex program.  The tangent-bitangent space is not necessary as the water is planar, so the normal is purely modified and then interpolated for fragment processing.
+        %h2{:id=>"obj2"} Texturing
+        %p Terrain texture is consulted by means of a texture atlas.  I would have liked to use a Texture Array or even a 3D Texture, but these features were unavailable in this GL context.  Depending on an attribute signaling which type of block it is, the texture UV coordinates are altered to index into the correct texture.  Texture atlasing was a major pain for me, so you can still see some colour bleeding due to the texture interpolation mode.
+        %p Sprite texturing is a straight-forward case of consulting a texture.  Nothing special is happening here, except alpha blending to hide the rectangularity of the sprite.  I would have also liked to use atlases here and animate the sprites, but there was not enough time.
+        %p 
+          To perform water displacement, I consult 2 textures, the gradients and the permutations of Perlin's improved noise in the vertex program.  This is a parallel-processing port of his normal algorithm that allows me to calculate the noise in real-time.  I've ripped the basic technology from my earlier work at 
+          %a{:href=>"http://anthonycameron.com/lab#perlinshader"} http://anthonycameron.com/lab#perlinshader
+        %p These same gradient/permutation textures may be used in other places, for example, to add some more fine detail in the texture/normals of the waves.  Or, it could be used as a basis for more procedural textures.
+        %h2{:id=>"obj5"} Procedural terrain modeling via combinations of noise and blending functions
+        %p 3D improved Perlin noise and a blending function are combined to produce what resembles a terrain.  The noise is continuous, so it must be discretized.  The discretized results are stored in a look-up table (LUT), of resolution^3 size, where resolution is developer specifiable.  This LUT is consulted for tessellation of terrain.  A clever algorithm is employed to minimize the hidden surfaces that effectively result as we carve out the landscape in discretized chunks.
+        %h2{:id=>"obj7"} Camera animation on splines
+        %p 2 Catmull-Rom splines are created.  The first, position, is just simply a linear interpolator, so I'm not sure why I even used a spline.  I suppose the motivation is to allow for changing it to something else in the future.  The second spline, velocity, modulates the evaluation of the first, and the end result is a camera that moves somewhat more fluidly than pure linear interpolation.  To note: my splines are limited to just 4 control points.
+        %h2{:id=>"obj8"} AI pathing
+        %p You can see the pathing system at work with the 2 characters on the game board when you select the MOVE option.
+        %p When the game starts, it consults the LUT of the terrain to determine which positions are "standable".  A position is standable if it is air and below it is ground.  More complex rules would allow for checks to character height &ndash; perhaps another constraint would be to make sure there is n blocks of headroom for the character to occupy.
+        %p The result is a map in [x,z] of same dimensions as the [x,y,z] LUT of the terrain.  In each square is an array of >=0 possible y-values that a character might occupy.  I call this map the pseudo-heightmap.
+        %p To path find, a feeler is sent out from character position [a,b,c] to the 4 immediately adjacent game tiles.  Each feeler might add >1 path segment to the currently generated path, for example, if there are >1 possible standable spots for that particular [x,z] point.  The process repeats recursively from the newly added segments.
+        %p A segment is only added to the path under some specific stipulations.  First, it must not already exist in the path as a shorter path.  Secondly, it must be within the character's jump height.  There are some other stipulations, but please refer to game.js if you're curious.
+        %p The recursion halts after a maximum number of "steps" has occurred, here referred to as the character.MOVE_DISTANCE.
+        %p This pathing system guarantees that, between 2 squares that are game-legal for a character, the character will generate the shortest path.
+        %p I've used the splines I created for the camera system to animate the position of the moving character.  I put a slight bias on the first and last control point, depending on the relative heights of where he is going to and coming from, so as to give the appearance of him jumping.
+        %h2{:id=>"obj9"} Reflections on water surfaces
+        %p The terrain is flipped about the plane that represents the water.  Then, it is translated by the world-height of the water plane.  It is rendered to an off-screen render buffer of 512x512.  The same viewport dimensions are used.
+        %p This off-screen render buffer is then consulted as a texture in the water fragment shader.  The texture coordinates are calculated in screenspace: as gl_FragCoord.x / 1024.0 and gl_FragCoord.y / 1024.0.  I'm not certain why 1024 seemed to provide the best results, because I would have thought dividing by the context viewport dimensions would yield UV in [0..1].  I have a hypothesis that it may be related to 1024 being a factor of 2 more than the render target resolution, namely 512x512.
+        %p The texture coordinates are then altered by the interpolated water normal.  This allows the reflected scene to appear to warp and bend, which we expect to see when we look at turbulent water.  The water is then shaded as per Phong shading.
+        %p I'm pretty sure the water reflections are highly hackish, but they produced somewhat compelling results.
+        %h2{:id=>"obj10"} Trees
+        %p I wanted to create some kind of context-free tree.  I didn't actually go about created a grammar or anything of the sort.  I just defined a few simple rules.  I will now describe these rules to you, because I feel that is the best way to explain these trees.
+        %p A root segment is created with a defined number of iterations.  Some simple rules are used to recursively generate the rest of the segments.  In my demonstration, all segments are the same length.
+        %p The branching recursion terminates if the max iterations has been reached.  N branches are added.  N is calculated randomly, but is biased by the lifetime of the tree.  For instance, as the iteration count increases, the maximum possible value of N decreases.  For each new branch, 2 random rotations are applied to the up vector [0,1,0] to produce something like a conical distribution.  The extent of these rotations can be controlled on a per-axis basis.  The new segment is produced, with starting point equal to the ending point of the previous segment.  The new segment's ending point is determined by this randomly rotated vector.
+        %p If you remove the randomness, it easily creates a fractal tree.  If you remove the conical distribution and reduce the extent of the rotation, it easily creates a fractal fern.
+        %p The tree branches are rendered with colours determined by their segment iteration.  The higher the iteration, the more the channel green contributes to the colour.
+      %section#caveats
+        %h1 Bugs / Caveats / Cautions
+        %p If anything breaks or stops working, just try to refresh (F5) the page.
+        %p I'd give the program some time to appear to finish "working" after the execution of the significant animations.  Namely, these are the Q,E keys (rotation about spline) and the character MOVE option.  This is because JavaScript doesn't really support any kind of threaded model, and instead events are queued in what I would call a ridiculous way: they're all queued at once, but with different timeouts.  Queueing up more before the first queue has finished is probably what breaks it.
+        %p Moving with W,A,S,D and then attempting to rotate (in any capacity) will seem to be / is buggy.  I'm not happy with the behaviour.
+        %p Point sprite characters:  If you zoom in too much, they will become very small.  They should be a constant size, but this is surprisingly harder than I thought it'd be.  At least they stop growing after a certain point when zooming out!
+        %p Texture atlasing with OpenGL2.0 is a pain.  If I used the nearest neighbour texture filtering, you would not see those lines that appear on the terrain where one texture bleeds into the next.  However, it also looks more like crap.  Texture Arrays are not supported, and texture atlasing, I have concluded, is the work of a demon.
+      %section#futurework
+        %h1 Future Work
+        %ul
+          %li Networking could very easily be achieved by using the browser's suite of networking tools to provide for saved game storage and multiplayer.  
+          %li HTML5 Local Storage might be used to store the results of any significant computations, such as the look-up tables used by the noise or current game state.  
+          %li Application source update delivery would be trivial by simply changing the pages involved.
+          %li The scope of the project should be kept 'rather light' so as to avoid horrendous situations like repeatedly transmitting complex meshes over HTML.
+          %li Use a spline with convex-hull property for camera animation and character movement
+          %li For the reflection map, reject those items that are below the water surface.  This would probably be best accomplished through creation of a new shader, and this new shader could have intensive features like bump-mapping disabled.
+          %li Tessellate the trees, perhaps sampling 1 circle randomly and using that as a piecewise approximation to a cylinder.  Use this circle as the top and bottom face for each of the segments.
+      %section#codemap
+        %h1 Code Map
+
+        %h2 Third-party code
+        %p
+          %strong jQuery:
+          Was very useful in the UI related aspects, binding events to keydown, mouseenter, click, and so on.
+        %p
+          %strong jquery.mousewheel:
+          Another library that might not provide complete support for all browsers.  I suppose mouse scrolling is something that isn't very well supported by the browsers?
+        %p
+          %strong gl-matrix-1.1.js:
+          Basically, the JS port of the algebra library.  I did not want to port the entire algebra library if it already existed.
+
+
+        %h2 Scene
+        %p
+          %strong scene.js:
+          A skeleton for a scene.
+        %p
+          %strong small_grassy_game.js, big_terrain.js:
+          The content of these files are executed depending on which option you select in the select box.  These are probably what you might want to play with.
+        %h2 Application relevant
+        %p
+          %strong perlin.js: 
+          CPU implementation of improved Perlin noise.  Consulted in the LUT generation phase of terrain.  This is a port of Ken Perlin's original code that I did a while back.
+        %p
+          %strong *.js:
+          All other files have descriptive names of the feature sets they implement.  Please see the files themselves for more documentation.
+      %section#references
+        %h1 References & Acknowledgements
+        %p The following were of use to me in the implementation of this project.  I'd like to thank these authors for their great work, and apologize to anyone I forgot to mention here; I've probably forgot many in my haste.
+        %h2 Papers
+        %ul
+          %li Blinn, J F. (1978). Simulation of wrinkled surfaces. ACM SIGGRAPH Computer Graphics, 12(3).
+          %li Gustavson, S. (2005, March 22). Simplex noise demystified.
+          %li Vlachos, A. Isidoro, J. Oat, C.  Rippling Reflective and Refractive Water.  ATI Research.
+        %h2 Web References
+        %ul
+          %li
+            Cameron, A. Procedural Textures.
+            %a{:href=>"http://anthonycameron.com/lab#texture"} http://anthonycameron.com/lab#texture
+          %li
+            Finch, M.  Effective Water Simulation from Physical Models.  GPU Gems.
+            %a{:href=>"http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html"}
+          %li
+            Using textures in WebGL.  Mozilla Developer Network.
+            %a{:href=>"https://developer.mozilla.org/en/WebGL/Using_textures_in_WebGL"} https://developer.mozilla.org/en/WebGL/Using_textures_in_WebGL
+          %li
+            WebGL Lesson 16 – rendering to textures
+            %a{:href=>"http://learningwebgl.com/blog/?p=1786"} http://learningwebgl.com/blog/?p=1786
+          %li
+            Screen Space Ambient Occlusion Shader
+            %a{:href=>"http://www.coniserver.net/wiki/index.php/Screen_Space_Ambient_Occlusion_Shader"} http://www.coniserver.net/wiki/index.php/Screen_Space_Ambient_Occlusion_Shader
+          %li
+            Bourke, P. (2000, January). 
+            %a{:href=>"http://paulbourke.net/texture_colour/perlin/"} Perlin noise and turbulence.
+          %li
+            Procedural Content Generation Wiki
+            %a{:href=>"http://pcg.wikidot.com/"} http://pcg.wikidot.com/
+          %li
+            Perlin, K.
+            Implementing Improved Perlin Noise. GPU Gems.
+            %a{:href=>"http://http.developer.nvidia.com/GPUGems/gpugems_ch05.html"} http://http.developer.nvidia.com/GPUGems/gpugems_ch05.html
+          %li
+            Green, S.
+            Implementing Improved Perlin Noise. GPU Gems.
+            %a{:href=>"http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter26.html"} http://http.developer.nvidia.com/GPUGems2/gpugems2_chapter26.html
+          %li 
+            Young, S.
+            Terrains, Part 1,
+            %a{:href=>"http://www.shamusyoung.com/twentysidedtale/?p=141"} http://www.shamusyoung.com/twentysidedtale/?p=141
+          %li
+            Minecraft Like Rendering Experiments in OpenGL 4,
+            %a{:href=>"http://codeflow.org/entries/2010/dec/09/minecraft-like-rendering-experiments-in-opengl-4/"} http://codeflow.org/entries/2010/dec/09/minecraft-like-rendering-experiments-in-opengl-4/
+          %li
+            More on Minecraft-type world gen,
+            %a{:href=>"http://www.gamedev.net/blog/33/entry-2227887-more-on-minecraft-type-world-gen/"} http://www.gamedev.net/blog/33/entry-2227887-more-on-minecraft-type-world-gen/
